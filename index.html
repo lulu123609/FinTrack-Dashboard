@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FinTrack - Dashboard Keuangan</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+<div class="app-shell">
+  <aside class="sidebar">
+    <a class="brand" href="#"><span class="brand-mark">F</span><span>FinTrack</span></a>
+    <div class="side-label">MENU UTAMA</div>
+    <a class="nav-link active" href="#overview"><span class="nav-icon">▦</span>Dashboard</a>
+    <a class="nav-link" href="#transactions"><span class="nav-icon">↔</span>Transaksi</a>
+    <a class="nav-link" href="#reports"><span class="nav-icon">▤</span>Laporan</a>
+    <div class="sidebar-bottom"><div class="profile-avatar">L</div><div><strong>Lulu Ilmahpudoh</strong><small>Personal account</small></div></div>
+  </aside>
+
+  <main class="main-content" id="overview">
+    <header class="topbar">
+      <div><p class="eyebrow">OVERVIEW KEUANGAN</p><h1>Dashboard</h1><p class="subheading">Pantau kondisi keuanganmu dengan lebih mudah.</p></div>
+      <div class="top-actions"><span class="date-chip" id="todayDate">Hari ini</span><button class="primary-btn" id="exportBtn">↓ <span>Export CSV</span></button></div>
+    </header>
+
+    <section class="filter-row">
+      <div><label for="monthFilter">Periode laporan</label>
+        <select id="monthFilter">
+          <option value="all">Semua bulan</option>
+          <option value="0">Januari</option><option value="1">Februari</option><option value="2">Maret</option><option value="3">April</option>
+          <option value="4">Mei</option><option value="5">Juni</option><option value="6">Juli</option><option value="7">Agustus</option>
+          <option value="8">September</option><option value="9">Oktober</option><option value="10">November</option><option value="11">Desember</option>
+        </select>
+      </div>
+      <span class="sample-note"><span class="dot"></span> Data tersimpan otomatis di browser</span>
+    </section>
+
+    <section class="summary-grid">
+      <article class="summary-card balance-card"><div class="card-top"><span>Total Saldo</span><span class="card-icon">◈</span></div><h2 id="balanceValue">Rp0</h2><p class="card-foot">Pemasukan dikurangi pengeluaran</p></article>
+      <article class="summary-card"><div class="card-top"><span>Total Pemasukan</span><span class="card-icon income-icon">↗</span></div><h2 id="incomeValue">Rp0</h2><p class="card-foot"><span class="positive">●</span> Uang yang diterima</p></article>
+      <article class="summary-card"><div class="card-top"><span>Total Pengeluaran</span><span class="card-icon expense-icon">↘</span></div><h2 id="expenseValue">Rp0</h2><p class="card-foot"><span class="negative">●</span> Uang yang digunakan</p></article>
+      <article class="summary-card"><div class="card-top"><span>Sisa Keuangan</span><span class="card-icon">✧</span></div><h2 id="remainingValue">Rp0</h2><p class="card-foot">Sisa dari pemasukan periode ini</p></article>
+    </section>
+
+    <section class="charts-grid" id="reports">
+      <article class="panel chart-panel"><div class="panel-heading"><div><h3>Arus Keuangan</h3><p>Perbandingan pemasukan dan pengeluaran</p></div><div class="legend"><span><i class="legend-income"></i>Pemasukan</span><span><i class="legend-expense"></i>Pengeluaran</span></div></div><div class="chart-wrap"><canvas id="flowChart"></canvas></div></article>
+      <article class="panel chart-panel category-panel"><div class="panel-heading"><div><h3>Kategori Pengeluaran</h3><p>Pengeluaran berdasarkan kategori</p></div></div><div class="donut-wrap"><canvas id="categoryChart"></canvas></div><div id="categoryLegend" class="category-legend"></div></article>
+    </section>
+
+    <section class="panel transactions-panel" id="transactions">
+      <div class="panel-heading transaction-heading">
+        <div><h3>Daftar Transaksi</h3><p>Tambah, ubah, atau hapus transaksi keuanganmu</p></div>
+        <button class="primary-btn" id="addBtn">＋ <span>Tambah Transaksi</span></button>
+      </div>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Nama Transaksi</th><th>Kategori</th><th>Tanggal</th><th>Metode</th><th>Tipe</th><th class="align-right">Jumlah</th><th>Aksi</th></tr></thead>
+        <tbody id="transactionBody"></tbody>
+      </table></div>
+      <p class="empty-state" id="emptyState" hidden>Belum ada transaksi pada periode ini. Klik "Tambah Transaksi" untuk mulai mencatat.</p>
+    </section>
+    <footer>© 2026 FinTrack <span>Kelola keuangan dengan lebih terarah.</span></footer>
+  </main>
+</div>
+
+<div class="modal-backdrop" id="modalBackdrop" hidden>
+  <section class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-heading"><div><p class="eyebrow">DATA KEUANGAN</p><h2 id="modalTitle">Tambah Transaksi</h2></div><button class="close-btn" id="closeModal" aria-label="Tutup">×</button></div>
+    <form id="transactionForm">
+      <label for="transactionName">Nama transaksi</label><input id="transactionName" type="text" placeholder="Contoh: Uang bulanan" required>
+      <div class="form-grid">
+        <div><label for="transactionType">Jenis transaksi</label><select id="transactionType" required><option value="income">Pemasukan</option><option value="expense">Pengeluaran</option></select></div>
+        <div><label for="transactionAmount">Nominal (Rp)</label><input id="transactionAmount" type="number" min="1" step="1" placeholder="Contoh: 500000" required></div>
+      </div>
+      <div class="form-grid">
+        <div><label for="transactionCategory">Kategori</label><input id="transactionCategory" type="text" placeholder="Contoh: Makanan" required></div>
+        <div><label for="transactionDate">Tanggal</label><input id="transactionDate" type="date" required></div>
+      </div>
+      <label for="transactionMethod">Metode pembayaran</label>
+      <select id="transactionMethod" required><option value="Tunai">Tunai</option><option value="E-Wallet">E-Wallet</option><option value="Kartu Debit">Kartu Debit</option><option value="QRIS">QRIS</option><option value="Transfer">Transfer</option></select>
+      <div class="modal-actions"><button type="button" class="secondary-btn" id="cancelBtn">Batal</button><button type="submit" class="primary-btn">Simpan Transaksi</button></div>
+    </form>
+  </section>
+</div>
+<script src="script.js"></script>
+</body>
+</html>
